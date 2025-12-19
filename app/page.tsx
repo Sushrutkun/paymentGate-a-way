@@ -10,15 +10,13 @@ export default function Home() {
     upiId: 'q604103885@ybl',
     payeeName: 'Anahata and Co',
     amount: '1.00',
-    transactionNote: 'Payment for services',
-    merchantCode: 'MERCHANT123',
-    transactionRef: `TXN${Date.now()}`
+    transactionNote: 'Service Payment'
   }
 
   const handlePayment = () => {
     setPaymentStatus('processing')
 
-    const upiUrl = `upi://pay?pa=${encodeURIComponent(upiDetails.upiId)}&pn=${encodeURIComponent(upiDetails.payeeName)}&am=${upiDetails.amount}&cu=INR&tn=${encodeURIComponent(upiDetails.transactionNote)}&mc=${upiDetails.merchantCode}&tr=${upiDetails.transactionRef}`
+    const upiUrl = `upi://pay?pa=${encodeURIComponent(upiDetails.upiId)}&pn=${encodeURIComponent(upiDetails.payeeName)}&am=${upiDetails.amount}&cu=INR&tn=${encodeURIComponent(upiDetails.transactionNote)}`
 
     window.location.href = upiUrl
 
@@ -58,10 +56,6 @@ export default function Home() {
                 <div className="flex justify-between">
                   <span className="text-gray-500 text-sm">Transaction Note</span>
                   <span className="text-gray-900 text-sm font-medium">{upiDetails.transactionNote}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500 text-sm">Merchant Code</span>
-                  <span className="text-gray-900 text-sm font-medium">{upiDetails.merchantCode}</span>
                 </div>
               </div>
             </div>
@@ -117,18 +111,16 @@ export default function Home() {
         </div>
 
         <div className="mt-6 bg-white/80 backdrop-blur rounded-xl p-4">
-          <h3 className="font-semibold text-gray-800 mb-2 text-sm">Payment Details Included:</h3>
+          <h3 className="font-semibold text-gray-800 mb-2 text-sm">UPI Parameters Included:</h3>
           <ul className="text-xs text-gray-600 space-y-1">
             <li>✓ <strong>pa</strong> - Payee Address (UPI ID)</li>
             <li>✓ <strong>pn</strong> - Payee Name</li>
             <li>✓ <strong>am</strong> - Amount (₹5.00)</li>
             <li>✓ <strong>cu</strong> - Currency (INR)</li>
             <li>✓ <strong>tn</strong> - Transaction Note</li>
-            <li>✓ <strong>mc</strong> - Merchant Code</li>
-            <li>✓ <strong>tr</strong> - Transaction Reference</li>
           </ul>
           <p className="text-xs text-gray-500 mt-3 italic">
-            All required parameters are pre-filled to avoid risk policy errors
+            Using essential UPI parameters only to avoid fraud detection
           </p>
         </div>
       </div>
