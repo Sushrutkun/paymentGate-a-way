@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { CreditCard, CheckCircle, AlertCircle } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { CreditCard, CheckCircle, AlertCircle, QrCode } from 'lucide-react'
 
 export default function Home() {
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle')
+  const [qrCodeUrl, setQrCodeUrl] = useState('')
 
   const upiDetails = {
     upiId: 'q604103885@ybl',
@@ -13,10 +14,30 @@ export default function Home() {
     transactionNote: 'Service Payment'
   }
 
-  const handlePayment = () => {
+  useEffect(() => {
+    const upiString = `upi://pay?pa=${upiDetails.upiId}&pn=${encodeURIComponent(upiDetails.payeeName)}&am=${upiDetails.amount}&cu=INR&tn=${encodeURIComponent(upiDetails.transactionNote)}`
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiString)}`
+    setQrCodeUrl(qrUrl)
+  }, [])
+
+  const handlePayment = (app?: 'gpay' | 'phonepe' | 'paytm') => {
     setPaymentStatus('processing')
 
-    const upiUrl = `upi://pay?pa=${encodeURIComponent(upiDetails.upiId)}&pn=${encodeURIComponent(upiDetails.payeeName)}&am=${upiDetails.amount}&cu=INR&tn=${encodeURIComponent(upiDetails.transactionNote)}`
+    let upiUrl = ''
+    const pa = upiDetails.upiId
+    const pn = encodeURIComponent(upiDetails.payeeName)
+    const am = upiDetails.amount
+    const tn = encodeURIComponent(upiDetails.transactionNote)
+
+    if (app === 'gpay') {
+      upiUrl = `tez://upi/pay?pa=${pa}&pn=${pn}&am=${am}&cu=INR&tn=${tn}`
+    } else if (app === 'phonepe') {
+      upiUrl = `phonepe://pay?pa=${pa}&pn=${pn}&am=${am}&cu=INR&tn=${tn}`
+    } else if (app === 'paytm') {
+      upiUrl = `paytmmp://pay?pa=${pa}&pn=${pn}&am=${am}&cu=INR&tn=${tn}`
+    } else {
+      upiUrl = `upi://pay?pa=${pa}&pn=${pn}&am=${am}&cu=INR&tn=${tn}`
+    }
 
     window.location.href = upiUrl
 
@@ -81,23 +102,67 @@ export default function Home() {
               </div>
             )}
 
-            <button
-              onClick={handlePayment}
-              disabled={paymentStatus === 'processing'}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-4 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            >
-              {paymentStatus === 'processing' ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <CreditCard className="w-5 h-5 mr-2" />
-                  Pay ₹{upiDetails.amount} Now
-                </>
+            <div className="space-y-3">
+              <button
+                onClick={() => handlePayment('gpay')}
+                disabled={paymentStatus === 'processing'}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                <CreditCard className="w-5 h-5 mr-2" />
+                Pay with Google Pay
+              </button>
+
+              <button
+                onClick={() => handlePayment('phonepe')}
+                disabled={paymentStatus === 'processing'}
+                className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                <CreditCard className="w-5 h-5 mr-2" />
+                Pay with PhonePe
+              </button>
+
+              <button
+                onClick={() => handlePayment('paytm')}
+                disabled={paymentStatus === 'processing'}
+                className="w-full bg-gradient-to-r from-cyan-600 to-cyan-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-cyan-700 hover:to-cyan-800 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                <CreditCard className="w-5 h-5 mr-2" />
+                Pay with Paytm
+              </button>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">OR</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => handlePayment()}
+                disabled={paymentStatus === 'processing'}
+                className="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-semibold py-3 px-6 rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                <CreditCard className="w-5 h-5 mr-2" />
+                Pay with Any UPI App
+              </button>
+            </div>
+
+            <div className="mt-6 p-4 bg-gray-50 rounded-xl">
+              <div className="flex items-center justify-center mb-3">
+                <QrCode className="w-5 h-5 text-gray-600 mr-2" />
+                <span className="text-sm font-semibold text-gray-700">Scan QR Code to Pay</span>
+              </div>
+              {qrCodeUrl && (
+                <div className="flex justify-center">
+                  <img src={qrCodeUrl} alt="UPI QR Code" className="w-48 h-48 rounded-lg" />
+                </div>
               )}
-            </button>
+              <p className="text-xs text-gray-500 text-center mt-3">
+                Scan with any UPI app to pay ₹{upiDetails.amount}
+              </p>
+            </div>
 
             <div className="mt-6 text-center">
               <p className="text-xs text-gray-500">
@@ -111,16 +176,15 @@ export default function Home() {
         </div>
 
         <div className="mt-6 bg-white/80 backdrop-blur rounded-xl p-4">
-          <h3 className="font-semibold text-gray-800 mb-2 text-sm">UPI Parameters Included:</h3>
+          <h3 className="font-semibold text-gray-800 mb-2 text-sm">Multiple Payment Options:</h3>
           <ul className="text-xs text-gray-600 space-y-1">
-            <li>✓ <strong>pa</strong> - Payee Address (UPI ID)</li>
-            <li>✓ <strong>pn</strong> - Payee Name</li>
-            <li>✓ <strong>am</strong> - Amount (₹5.00)</li>
-            <li>✓ <strong>cu</strong> - Currency (INR)</li>
-            <li>✓ <strong>tn</strong> - Transaction Note</li>
+            <li>✓ Direct app-specific UPI deep links (GPay, PhonePe, Paytm)</li>
+            <li>✓ Universal UPI payment link for all apps</li>
+            <li>✓ QR code scanning for maximum compatibility</li>
+            <li>✓ Simplified parameters to avoid fraud detection</li>
           </ul>
           <p className="text-xs text-gray-500 mt-3 italic">
-            Using essential UPI parameters only to avoid fraud detection
+            Choose your preferred payment method above
           </p>
         </div>
       </div>
