@@ -7,9 +7,9 @@ export default function Home() {
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle')
 
   const upiDetails = {
-    upiId: 'sushrutathawale1509@oksbi',
-    payeeName: 'Sushrut Athawale',
-    amount: '5.00',
+    upiId: 'q604103885@ybl',
+    payeeName: 'Anahata and Co',
+    amount: '1.00',
     transactionNote: 'Payment for services',
     merchantCode: 'MERCHANT123',
     transactionRef: `TXN${Date.now()}`
