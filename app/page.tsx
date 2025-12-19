@@ -8,10 +8,10 @@ export default function Home() {
   const [qrCodeUrl, setQrCodeUrl] = useState('')
 
   const upiDetails = {
-    upiId: 'q604103885@ybl',
-    payeeName: 'Anahata and Co',
+    upiId: 'justswish.hyperpg@axb',
+    payeeName: 'MUNCHMART TECHNOLOGIES PRIVATE LIMITED',
     amount: '1.00',
-    transactionNote: 'Service Payment'
+    transactionNote: 'Food Delivery Service Payment'
   }
 
   useEffect(() => {
