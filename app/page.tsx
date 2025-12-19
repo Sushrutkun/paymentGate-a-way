@@ -7,8 +7,8 @@ export default function Home() {
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle')
 
   const upiDetails = {
-    upiId: 'example@paytm',
-    payeeName: 'Merchant Name',
+    upiId: 'sushrutathawale1509@oksbi',
+    payeeName: 'Sushrut Athawale',
     amount: '5.00',
     transactionNote: 'Payment for services',
     merchantCode: 'MERCHANT123',
